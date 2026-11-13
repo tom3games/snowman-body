@@ -105,18 +105,20 @@ function ldStep() { ldN++; $('ldBar').firstElementChild.style.width = Math.min(1
 async function boot() {
   applyLang()
   const fontP = document.fonts ? Promise.race([document.fonts.load('700 20px "Zen Kaku Gothic New"'), new Promise(r => setTimeout(r, 2500))]).catch(() => {}) : Promise.resolve()
-  await Promise.all([loadTextures(V, ldStep), fontP])
-  W = buildWorld(scene); ldStep()
+  const M = n => window.__mark && window.__mark(n); M('start')
+  await loadTextures(V, ldStep); M('tex')
+  W = buildWorld(scene); ldStep(); M('world')
   ball = makeBall(); scene.add(ball)
   P = makeParticles(scene, lowEnd ? 700 : 1100); P.pts.material.uniforms.scale.value = innerHeight * 0.75
   trail = makeTrail(scene); D = makeDebris(scene)
   fallSnow = makeFallingSnow(); sparkle = null
-  loadChars(V).then(() => {}); for (let i = 0; i < 5; i++) ldStep()
+  for (let i = 0; i < 5; i++) ldStep()
   setWeather('sunny')
   G.run = newRun(1, { weather: 'sunny' }); placeBall(true)
-  enter('title')
-  renderer.compile(scene, camera)
+  enter('title'); M('weather')
+  renderer.compile(scene, camera); M('compile')
   window.__snowReady = true
+  setTimeout(() => loadChars(V), 50)  // 人は最初の画面のあとで読む（届くまでは仮の形）
   const l = $('loading'); l.style.opacity = '0'; setTimeout(() => l.remove(), 450)
 }
 setTimeout(() => { const l = $('loading'); if (l && G.state === 'load') { l.style.opacity = '0' } }, 12000)
@@ -127,15 +129,16 @@ const WX = {
   cloudy: { top: 0x8a9bb0, hor: 0xd7dee7, fog: 0xd2dae4, sun: 1.0, hemi: 1.35, sunAmt: 0.15, exp: 1.1 },
   snowing: { top: 0x9aa6b6, hor: 0xd9e0e8, fog: 0xcfd7e1, sun: 0.7, hemi: 1.45, sunAmt: 0.05, exp: 1.12 },
 }
+const ENVC = {}, BDC = {}
 function setWeather(w) {
   const c = WX[w]
   sky.material.uniforms.top.value.set(c.top); sky.material.uniforms.hor.value.set(c.hor); sky.material.uniforms.sunAmt.value = c.sunAmt
   scene.fog.color.set(c.fog); scene.fog.near = w === 'snowing' ? 30 : 60; scene.fog.far = w === 'snowing' ? 300 : 520
   sun.intensity = c.sun; hemi.intensity = c.hemi * 0.6; renderer.toneMappingExposure = c.exp
-  if (scene.environment) scene.environment.dispose(); scene.environment = makeEnv(c.top, c.hor); scene.environmentIntensity = 0.75
+  ENVC[w] = ENVC[w] || makeEnv(c.top, c.hor); scene.environment = ENVC[w]; scene.environmentIntensity = 0.75  // 天気ごとに1回だけ作る
   if (W) W.terrainMat.userData.u.sunAmt.value = w === 'sunny' ? 1 : 0.25
-  if (backdrop) { scene.remove(backdrop); backdrop.material.map.dispose(); backdrop.geometry.dispose() }
-  backdrop = buildBackdrop(scene, w)
+  if (backdrop) backdrop.visible = false
+  BDC[w] = BDC[w] || buildBackdrop(scene, w); backdrop = BDC[w]; backdrop.visible = true
   if (fallSnow) fallSnow.visible = w === 'snowing'
   grade.uniforms.cool.value = w === 'sunny' ? 0 : 1
 }

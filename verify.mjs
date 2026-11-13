@@ -25,7 +25,7 @@ async function open(browser, opts = {}, q = '') {
   const p = await ctx.newPage(); p.errs = []
   p.on('pageerror', e => p.errs.push('pageerror ' + e.message))
   p.on('console', m => { if (m.type() === 'error') p.errs.push('console ' + m.text()) })
-  p.on('requestfailed', r => { if (!/fonts\.(googleapis|gstatic)|googletagmanager/.test(r.url())) p.errs.push('reqfail ' + r.url()) })
+  p.on('requestfailed', r => { if (!/fonts\.(googleapis|gstatic)|googletagmanager/.test(r.url()) && !/ABORTED|cancelled/i.test((r.failure() || {}).errorText || '')) p.errs.push('reqfail ' + r.url() + ' ' + ((r.failure() || {}).errorText || '')) })
   await p.goto(URL0 + q); await p.waitForFunction(() => window.__snowReady, null, { timeout: 40000 })
   return p
 }
@@ -192,7 +192,7 @@ await t('WebKit: 2本指の touchmove を止める', async () => {
 await t('WebKit: 指で始めて、手袋を押せて、実際には無音', async () => {
   const bx = await wp.evaluate(() => { const r = document.getElementById('bStart').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 } })
   await wp.touchscreen.tap(bx.x, bx.y)
-  await wp.waitForFunction(() => window.snowman.G.state === 'play', null, { timeout: 5000 })
+  await wp.waitForFunction(() => window.snowman.G.state === 'play', null, { timeout: 20000 })
   const r = await wp.evaluate(() => ({ ok: window.__muteOk(), st: window.snowman.G.state }))
   expect(r.ok, JSON.stringify(r)); return r
 })

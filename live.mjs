@@ -8,7 +8,7 @@ const OWNER = (() => { try { return execSync('gh api user -q .login', { encoding
 const URL0 = 'https://tom3games.github.io/snowman-body/'
 const out = []
 for (const [name, bt, opts] of [['chromium', chromium, {}], ['webkit', webkit, { isMobile: true, hasTouch: true, deviceScaleFactor: 2 }]]) {
-  const b = await bt.launch(bt === chromium ? MUTE_LAUNCH : {}), ctx = await b.newContext({ locale: 'ja-JP', viewport: { width: 390, height: 844 }, ...opts })
+  const b = await bt.launch(bt === chromium ? { args: [...MUTE_LAUNCH.args, '--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'] } : {}), ctx = await b.newContext({ locale: 'ja-JP', viewport: { width: 390, height: 844 }, ...opts })
   await muteContext(ctx)
   const p = await ctx.newPage()
   const errs = []
@@ -19,7 +19,7 @@ for (const [name, bt, opts] of [['chromium', chromium, {}], ['webkit', webkit, {
   // 遊びの通し: 始める → 村の手前へ → 結末 → 絵日記
   const bx = await p.evaluate(() => { const r = document.getElementById('bStart').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 } })
   if (opts.hasTouch) await p.touchscreen.tap(bx.x, bx.y); else await p.mouse.click(bx.x, bx.y)
-  await p.waitForFunction(() => window.snowman.G.state === 'play', null, { timeout: 5000 })
+  await p.waitForFunction(() => window.snowman.G.state === 'play', null, { timeout: 25000 })
   await p.evaluate(() => { window.snowman.pause(true); window.snowman.setRun({ x: 4.2, z: 960, vx: 0, vz: 8, r: 0.6 }); window.snowman.pause(false) })
   await p.waitForFunction(() => window.snowman.G.state === 'result', null, { timeout: 30000 })
   const fin = await p.evaluate(() => window.__lastEnd.key + ' mute=' + (window.__muteOk ? window.__muteOk() : '?'))

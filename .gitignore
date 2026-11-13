@@ -3,3 +3,5 @@ node_modules
 shots/
 tools/_dbg.mjs
 art/prompts/
+tools/_live_dbg.mjs
+tools/_prof.mjs
