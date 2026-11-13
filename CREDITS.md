@@ -1,0 +1,29 @@
+# 素材の出所
+
+- snd/wood1.mp3: 75 CC0 breaking / falling / hit sfx / rubberduck / CC0
+- snd/wood2.mp3: 75 CC0 breaking / falling / hit sfx / rubberduck / CC0
+- snd/wood3.mp3: 75 CC0 breaking / falling / hit sfx / rubberduck / CC0
+- snd/woodfall.mp3: 75 CC0 breaking / falling / hit sfx / rubberduck / CC0
+- snd/rock1.mp3: 75 CC0 breaking / falling / hit sfx / rubberduck / CC0
+- snd/rock2.mp3: 75 CC0 breaking / falling / hit sfx / rubberduck / CC0
+- snd/rock3.mp3: 75 CC0 breaking / falling / hit sfx / rubberduck / CC0
+- snd/splash1.mp3: 100 CC0 SFX / rubberduck / CC0
+- snd/splash2.mp3: 100 CC0 SFX / rubberduck / CC0
+- snd/snowhit.mp3: File:Jump into Snow (Gravity Sound).mp3 / Gravity Sound / CC BY 4.0
+- snd/bgm.mp3: Hot Springs Town / Kistol / CC0
+- snd/j_bad.mp3: 85 Short music jingles / Kenney / CC0
+- snd/chime.mp3: Bell dings/chimes / PWL / CC0
+- snd/click.mp3: Interface Sounds / Kenney / CC0
+- snd/steam.mp3: Air whoosh / pyranostudios / CC0
+- snd/kids.mp3: File:Douzen kids on playground.ogg / stephan / Public domain
+- snd/brook.mp3: File:Brook sound.ogg / TwoWings / CC BY 3.0
+- snd/roll_loop.wav: Wikimedia Commons「Crunchy Snow Walking Sound Effect」Free Sounds Library User Spanac（CC BY 3.0）と「Walking through snow」Lukas Beck（CC BY 4.0）を重ねてループにした
+- snd/fire_loop.wav: Wikimedia Commons「Bones breaking wood fire ice crackling」stephan（Public domain）から切り出し
+- snd/wind_loop.wav: Wikimedia Commons「Howling wind」（CC0）
+- snd/rumble.mp3: 75 CC0 breaking / falling / hit sfx（rubberduck, CC0）の岩の落ちる音を遅く重ねた
+- snd/j_good.mp3: 85 Short music jingles / Kenney / CC0
+- snd/j_rare.mp3: 85 Short music jingles / Kenney / CC0
+- snd/applause.mp3: Applause in a large hall or church / eXpl0it3r / CC0
+- 3D の質感: Poly Haven（CC0）snow_02 / rock_boulder_dry / aerial_rocks_02 / japanese_cedar_bark / weathered_planks / cobblestone_floor_08 / plastered_wall_04 / dirt / corrugated_iron
+- 人: Kenney Mini Characters（CC0）
+- three.js（MIT）

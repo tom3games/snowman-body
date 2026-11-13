@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script id="ghMove">if(location.hostname==='tom3games.github.io'&&!/[?&]stay=1/.test(location.search)){location.replace('https://tom3games.com/play/snowman-body/'+location.search+location.hash)}</script>
+<link rel="canonical" href="https://tom3games.com/play/snowman-body/">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>雪だるまの胴体になれ｜雪玉を転がすゲーム</title>
+<meta name="description" content="山のてっぺんで生まれた雪玉になって、ふもとの村まで転がり下りる3Dゲーム。雪の上で大きくなり、日なたや焚き火で溶け、岩で欠ける。ちょうどいい大きさで着けば雪だるまの胴体に。大きすぎると家をつぶす。結末は10種類。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="雪だるまの胴体になれ">
+<meta property="og:description" content="雪玉になって山を転がり下りる。大きすぎたら家をつぶし、溶けたら水たまり。ちょうどいい大きさで着けば雪だるまの胴体に。">
+<meta property="og:image" content="https://tom3games.com/play/snowman-body/og.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://tom3games.com/play/snowman-body/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#cfdcea">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Yuji+Syuku&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+[hidden]{display:none!important}
+:root{--snow:#f4f7fb;--ink:#1d2430;--wood:#8a5a36;--woodL:#c79a68;--woodD:#4e3220;--red:#c7362c;--sky:#cfdcea;--paper:#fbf7ee;
+  --go:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;--brush:"Yuji Syuku","Hiragino Mincho ProN",serif;--hand:"Klee One","Hiragino Maru Gothic ProN",sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--sky)}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;font-family:var(--go);color:var(--ink);overflow:hidden;height:100svh;background:var(--sky)}
+button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#view{position:fixed;inset:0;z-index:1}
+#view canvas{display:block;width:100%;height:100%;touch-action:none}
+.layer{position:fixed;inset:0;z-index:5;pointer-events:none}
+.layer button,.layer .pe{pointer-events:auto}
+
+/* 読み込み: 転がって大きくなる雪玉 */
+#loading{position:fixed;inset:0;z-index:90;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:linear-gradient(#bfd1e6,#eef3f8);transition:opacity .4s}
+#loading svg{width:150px;height:70px;overflow:visible}
+#loading .ball{animation:roll 1.6s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes roll{0%{transform:translateX(-50px) rotate(0) scale(.6)}100%{transform:translateX(50px) rotate(360deg) scale(1)}}
+#loading p{font-size:15px;font-weight:700;color:#4a5a70;letter-spacing:.08em}
+#ldBar{width:150px;height:4px;background:rgba(40,60,90,.15);border-radius:2px;overflow:hidden}
+#ldBar i{display:block;height:100%;width:0;background:#3c6ea8;transition:width .2s}
+
+/* タイトル: 吊った木の看板 */
+#vTitle{display:flex;flex-direction:column;align-items:center;padding:calc(18px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom) + var(--inapp-bot,0px))}
+#board{position:relative;margin-top:2svh;background:linear-gradient(#a8784e,#8a5a36);border-radius:6px;padding:16px 22px 18px;box-shadow:0 10px 26px rgba(30,40,60,.35),inset 0 0 0 3px rgba(60,35,20,.35);transform:rotate(-1.5deg);max-width:440px;width:calc(100% - 20px)}
+#board::before,#board::after{content:"";position:absolute;top:-38px;width:3px;height:40px;background:#5a4030}
+#board::before{left:24%}#board::after{right:24%}
+#board .snowtop{position:absolute;left:-6px;right:-6px;top:-10px;height:18px;border-radius:12px;background:#fafcff;box-shadow:0 2px 0 rgba(150,170,200,.4)}
+#tH{font-family:var(--brush);color:#fff8ec;text-shadow:0 2px 0 rgba(50,25,10,.55);line-height:1.08;text-align:center}
+#tH .a{display:block;font-size:min(7vw,30px,4.4svh)}
+#tH .b{display:block;font-size:min(14vw,62px,8.6svh)}
+#tK{margin-top:10px;font-size:14px;font-weight:700;color:#fbeedb;text-align:center;line-height:1.55;word-break:keep-all;overflow-wrap:anywhere}
+#tSpace{flex:1;min-height:12px}
+#bStart,#bAgain{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;width:min(78vw,300px);height:64px;border-radius:5px;background:linear-gradient(#b0814f,#8a5a36);color:#fff8ec;font-family:var(--brush);font-size:28px;letter-spacing:.14em;text-shadow:0 2px 0 rgba(50,25,10,.5);box-shadow:inset 0 0 0 3px rgba(60,35,20,.35),0 6px 0 #5a3a22,0 10px 22px rgba(30,40,60,.3);transform:rotate(1deg)}
+#bStart::before,#bAgain::before{content:"";position:absolute;left:-5px;right:-5px;top:-9px;height:16px;border-radius:10px;background:#fafcff;box-shadow:0 2px 0 rgba(150,170,200,.4)}
+#bStart:active,#bAgain:active{transform:rotate(1deg) translateY(4px);box-shadow:inset 0 0 0 3px rgba(60,35,20,.35),0 2px 0 #5a3a22}
+#bStart svg{width:34px;height:34px}
+#tBest{min-height:22px;margin-top:10px;font-size:14px;font-weight:700;color:#24344c;text-shadow:0 1px 0 rgba(255,255,255,.7)}
+.tLinks{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.tLinks button{min-height:44px;padding:0 12px;font-size:15px;font-weight:700;color:#1d2a40;text-shadow:0 1px 0 rgba(255,255,255,.75)}
+.tLinks button b{font-weight:900;color:var(--red)}
+.ico{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+
+/* 遊び中 */
+#hud{padding:calc(10px + env(safe-area-inset-top)) 12px 0}
+/* 山の道しるべ（残りの距離） */
+#sign{position:absolute;left:12px;top:calc(10px + env(safe-area-inset-top));display:flex;flex-direction:column;align-items:flex-start}
+#sign .plate{position:relative;background:linear-gradient(#b98652,#93653c);color:#fff6e6;border-radius:3px 14px 14px 3px;padding:5px 18px 6px 10px;box-shadow:0 3px 8px rgba(30,40,60,.3);clip-path:polygon(0 0,88% 0,100% 50%,88% 100%,0 100%)}
+#sign .k{font-size:11px;font-weight:700;opacity:.9;display:block;line-height:1}
+#sign .n{font-size:26px;font-weight:900;line-height:1.05;font-variant-numeric:tabular-nums}
+#sign .n small{font-size:14px;margin-left:1px}
+#wx{display:flex;align-items:center;gap:4px;margin-top:6px;font-size:13px;font-weight:700;color:#1d2a40;background:rgba(255,255,255,.72);border-radius:10px;padding:2px 8px 2px 4px}
+#wx svg{width:20px;height:20px}
+#bMute2{position:absolute;left:6px;top:calc(104px + env(safe-area-inset-top));width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#1d2a40}
+/* 背くらべの柱（大きさ） */
+#post{position:absolute;right:14px;top:calc(64px + env(safe-area-inset-top));width:44px;height:min(46svh,380px);border-radius:4px;background:linear-gradient(90deg,#7a4e2c,#b07a48 40%,#9a6a3e 70%,#6e4526);box-shadow:0 4px 10px rgba(30,40,60,.3)}
+#post::after{content:attr(data-k);position:absolute;top:-30px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:900;color:#1d2a40;white-space:nowrap;background:rgba(255,255,255,.85);border-radius:6px;padding:0 5px}
+#post::before{content:"";position:absolute;left:-4px;right:-4px;top:-9px;height:14px;border-radius:8px;background:#fafcff}
+#post .band{position:absolute;left:-6px;right:-6px;background:rgba(214,52,40,.82);border-radius:3px;box-shadow:0 0 0 2px rgba(255,255,255,.55)}
+#post .band span{position:absolute;right:calc(100% + 6px);top:50%;transform:translateY(-50%);font-family:var(--hand);font-size:13px;color:#b0281e;white-space:nowrap;background:rgba(255,255,255,.85);border-radius:6px;padding:0 5px}
+#post .mk{position:absolute;left:4px;right:4px;height:2px;background:rgba(40,20,10,.55)}
+#post .ic{position:absolute;right:calc(100% + 4px);width:22px;height:22px;transform:translateY(-50%)}
+#post .cur{position:absolute;left:50%;width:32px;height:32px;border-radius:50%;transform:translate(-50%,50%);background:radial-gradient(circle at 35% 30%,#fff,#dfe8f3 65%,#b8c7da);box-shadow:0 2px 6px rgba(20,30,50,.45);transition:background .2s}
+#post .cur.dn{background:radial-gradient(circle at 35% 30%,#fff,#bfe0ff 65%,#7ab3e8)}
+#post .cur.up{background:radial-gradient(circle at 35% 30%,#fff,#fff 60%,#e0e8f2)}
+#post .cur.ok{box-shadow:0 0 0 3px #d63428,0 2px 6px rgba(20,30,50,.45)}
+#sizeT{position:absolute;right:8px;top:calc(64px + min(46svh,380px) + 14px + env(safe-area-inset-top));font-size:13px;font-weight:900;color:#1d2a40;background:rgba(255,255,255,.8);border-radius:8px;padding:1px 7px;font-variant-numeric:tabular-nums;white-space:nowrap}
+#bub{position:absolute;z-index:8;max-width:min(62%,300px);background:#fff;color:var(--ink);border-radius:14px;padding:4px 12px 5px;font-size:15px;font-weight:700;line-height:1.35;width:max-content;opacity:0;transition:opacity .15s;transform:translate(-50%,-100%);box-shadow:0 2px 8px rgba(20,30,50,.25)}
+#bub.on{opacity:1}
+#bub.radio{background:#24344c;color:#fff;border-radius:6px}
+#pop{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);font-size:28px;font-weight:900;color:#fff;-webkit-text-stroke:6px #24344c;paint-order:stroke fill;white-space:nowrap;opacity:0}
+#pop.on{animation:pop 1.2s ease-out forwards}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-30%)}12%{opacity:1;transform:translate(-50%,-50%)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-62%)}}
+#tut{position:absolute;left:0;right:0;bottom:calc(118px + env(safe-area-inset-bottom) + var(--inapp-bot,0px));text-align:center;transition:opacity .5s}
+#tut p{display:inline-block;font-size:15px;font-weight:700;background:rgba(255,255,255,.88);padding:5px 14px;border-radius:10px}
+/* 手袋と長靴（位置は固定） */
+#pad{position:absolute;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom) + var(--inapp-bot,0px));display:flex;justify-content:space-between;align-items:flex-end;padding:0 10px}
+#pad button{position:relative;width:96px;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none}
+#pad button svg{width:78px;height:78px;filter:drop-shadow(0 4px 4px rgba(20,30,50,.35));transition:transform .06s}
+#pad button.on svg{transform:scale(.9) translateY(3px)}
+#pad button span{position:absolute;bottom:-2px;font-size:12px;font-weight:900;color:#1d2a40;background:rgba(255,255,255,.8);border-radius:6px;padding:0 6px}
+#bB{width:84px!important;height:84px!important}
+#bB svg{width:62px!important;height:62px!important}
+#vPlay.cine #sign,#vPlay.cine #post,#vPlay.cine #sizeT,#vPlay.cine #tut,#vPlay.cine #pop,#vPlay.cine #bMute2{visibility:hidden}
+#keys{position:absolute;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);font-size:12px;font-weight:700;color:#1d2a40;background:rgba(255,255,255,.7);border-radius:8px;padding:2px 10px;white-space:nowrap}
+
+/* 結果: 絵日記 */
+#vEnd{display:flex;flex-direction:column;align-items:center;padding:calc(10px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-bottom) + var(--inapp-bot,0px));background:rgba(205,218,234,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);pointer-events:auto}
+#resBox{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
+#res{max-width:100%;max-height:100%;aspect-ratio:4/5;border-radius:2px;box-shadow:0 10px 30px rgba(20,30,50,.35);transform:rotate(-1.2deg)}
+#res.in{animation:resIn .5s ease-out}
+@keyframes resIn{from{transform:translateY(20px) rotate(-1deg);opacity:0}to{opacity:1}}
+#newEnd{min-height:20px;font-size:14px;font-weight:900;color:var(--red);margin-top:6px}
+.endBtns{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:4px;width:100%}
+.endBtns .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.endBtns .row button{min-height:44px;padding:0 10px;font-size:15px;font-weight:700;color:#1d2a40;text-decoration:underline;text-decoration-color:rgba(29,42,64,.35);text-underline-offset:4px}
+#bAgain{height:56px;margin-top:6px;font-size:25px}
+
+/* 遊び方・図鑑（帳面） */
+.ovl{position:fixed;inset:0;z-index:80;background:rgba(20,30,50,.45);display:flex;align-items:center;justify-content:center;padding:16px;pointer-events:auto}
+.ovl .in{position:relative;width:min(100%,440px);max-height:calc(100svh - 32px);overflow:auto;padding:18px 18px 14px;background:var(--paper);color:var(--ink);border-radius:4px;box-shadow:0 10px 30px rgba(0,0,0,.3);background-image:repeating-linear-gradient(transparent 0 31px,rgba(80,120,180,.18) 31px 32px)}
+.ovl h3{font-family:var(--hand);font-size:24px;margin-bottom:10px}
+.ovl ol{padding-left:1.2em;display:flex;flex-direction:column;gap:8px;font-size:15px;font-weight:500;line-height:1.6}
+.ovl ol b{font-weight:900}
+.ovl small{display:block;margin-top:12px;font-size:11px;line-height:1.5;color:#5a6070}
+.ovl .close{display:block;margin:12px auto 0;min-height:44px;padding:0 26px;font-size:16px;font-weight:700;border:2px solid #24344c;border-radius:22px}
+#zGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+#zGrid .z{background:#fff;border-radius:4px;padding:8px 8px 7px;box-shadow:0 1px 3px rgba(0,0,0,.15);min-height:66px}
+#zGrid .z b{display:block;font-family:var(--hand);font-size:16px;line-height:1.25}
+#zGrid .z i{display:block;font-style:normal;font-size:12px;color:#5a6070;margin-top:3px;line-height:1.35}
+#zGrid .z.no b{color:#9aa2b0}
+#zGrid .z.rare b::after{content:"";display:inline-block;width:8px;height:8px;margin-left:5px;border-radius:50%;background:#d6a21e;vertical-align:middle}
+#zGrid .z.good{box-shadow:0 0 0 2px #d63428}
+@media (max-height:700px){#bStart{height:56px;font-size:21px}#tK{font-size:13px;margin-top:6px}#pad button{width:84px;height:84px}#pad button svg{width:66px;height:66px}#bAgain{height:48px}.ovl ol{font-size:14px;gap:6px}#post{width:38px}}
+</style>
+</head>
+<body>
+<div id="view"></div>
+<div id="loading"><svg viewBox="-75 0 150 70" aria-hidden="true"><path d="M-75 66 Q0 58 75 66" stroke="#9fb4cc" stroke-width="3" fill="none"/><g class="ball"><circle cx="0" cy="44" r="20" fill="#fff" stroke="#9fb4cc" stroke-width="2"/><path d="M-9 36q5 -4 10 0M2 50q6 3 10 -1" stroke="#c4d2e2" stroke-width="2" fill="none" stroke-linecap="round"/></g></svg><p id="ldTxt">雪を固めています</p><div id="ldBar"><i></i></div></div>
+
+<main id="vTitle" class="layer" hidden>
+  <div id="board" class="pe"><div class="snowtop"></div><h1 id="tH"><span class="a" id="tH1"></span><span class="b" id="tH2"></span></h1><p id="tK"></p></div>
+  <div id="tSpace"></div>
+  <button id="bStart"><svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="19" r="12" fill="#fff" stroke="#203048" stroke-width="2"/><path d="M10 15q4-3 8 0M15 24q5 2 8-1" stroke="#9fb4cc" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M3 31h28" stroke="#203048" stroke-width="2" stroke-linecap="round"/></svg><span id="bStartT"></span></button>
+  <p id="tBest"></p>
+  <div class="tLinks"><button id="bHow"></button><button id="bZukan"></button><button id="bLang"></button><button id="bMute" aria-label="sound"><svg class="ico" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="wave" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5" style="display:none"/></svg></button></div>
+</main>
+
+<main id="vPlay" class="layer" hidden>
+  <div id="sign"><div class="plate"><span class="k" id="hK"></span><span class="n"><span id="hN">975</span><small>m</small></span></div><div id="wx"></div></div>
+  <button id="bMute2" aria-label="sound"><svg class="ico" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path class="wave" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/><path class="x" d="M16 9.5l5 5M21 9.5l-5 5" style="display:none"/></svg></button>
+  <div id="post"><div class="band" id="pBand"><span id="pBandT"></span></div><div id="pMarks"></div><div class="cur" id="pCur"></div></div>
+  <div id="sizeT"></div>
+  <div id="bub"></div>
+  <div id="pop"></div>
+  <div id="tut"><p id="tutT"></p></div>
+  <div id="pad">
+    <button id="bL" aria-label="left"><svg viewBox="0 0 80 80" aria-hidden="true"><g transform="translate(80 0) scale(-1 1)"><path d="M22 70 L22 44 C14 40 10 30 16 24 C20 20 26 22 28 28 L30 34 L30 18 C30 8 50 6 54 16 L58 30 C62 40 60 54 56 62 L56 70 Z" fill="#c7362c" stroke="#5a1a14" stroke-width="3" stroke-linejoin="round"/><path d="M20 62h38v12H20z" fill="#f4efe6" stroke="#5a1a14" stroke-width="3"/><path d="M34 22l6 6M42 18l6 6M38 34l6 6M46 30l6 6M34 46l6 6M44 46l6 6" stroke="#e8786c" stroke-width="2.4" stroke-linecap="round"/><path d="M8 40 L2 40 M8 40 l5 -5 M8 40 l5 5" stroke="#fff" stroke-width="3.5" stroke-linecap="round" transform="translate(70 0) scale(-1 1)"/></g></svg><span id="bLT"></span></button>
+    <button id="bB" aria-label="brake"><svg viewBox="0 0 70 70" aria-hidden="true"><path d="M20 8h22v34l16 8c6 3 6 12-2 12H18c-4 0-6-3-6-6V30z" fill="#2f4f6e" stroke="#13222f" stroke-width="3" stroke-linejoin="round"/><path d="M16 56h44" stroke="#13222f" stroke-width="5" stroke-linecap="round"/><path d="M20 8h22v6H20z" fill="#f4efe6" stroke="#13222f" stroke-width="3"/></svg><span id="bBT"></span></button>
+    <button id="bR" aria-label="right"><svg viewBox="0 0 80 80" aria-hidden="true"><path d="M22 70 L22 44 C14 40 10 30 16 24 C20 20 26 22 28 28 L30 34 L30 18 C30 8 50 6 54 16 L58 30 C62 40 60 54 56 62 L56 70 Z" fill="#c7362c" stroke="#5a1a14" stroke-width="3" stroke-linejoin="round"/><path d="M20 62h38v12H20z" fill="#f4efe6" stroke="#5a1a14" stroke-width="3"/><path d="M34 22l6 6M42 18l6 6M38 34l6 6M46 30l6 6M34 46l6 6M44 46l6 6" stroke="#e8786c" stroke-width="2.4" stroke-linecap="round"/><path d="M72 40 L78 40 M72 40 l-5 -5 M72 40 l-5 5" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg><span id="bRT"></span></button>
+  </div>
+  <div id="keys" hidden></div>
+</main>
+
+<main id="vEnd" class="layer" hidden>
+  <div id="resBox"><canvas id="res" width="1080" height="1350"></canvas></div>
+  <p id="newEnd"></p>
+  <div class="endBtns">
+    <button id="bAgain"></button>
+    <div class="row"><button id="bSave"></button><button id="bPost"></button><button id="bZukan2"></button><button id="bBack"></button></div>
+  </div>
+</main>
+
+<div class="ovl" id="how" hidden><div class="in"><h3 id="howH"></h3><ol id="howBody"></ol><small id="howCred"></small><button class="close" id="howClose"></button></div></div>
+<div class="ovl" id="zukan" hidden><div class="in"><h3 id="zH"></h3><div id="zGrid"></div><button class="close" id="zClose"></button></div></div>
+
+<script>
+(function(){
+  var opt={passive:false};
+  ['gesturestart','gesturechange','gestureend'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault()},opt)});
+  document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1)e.preventDefault()},opt);
+  var last=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-last<300&&!(e.target.closest&&e.target.closest('button,a')))e.preventDefault();last=n},opt);
+  document.addEventListener('dblclick',function(e){e.preventDefault()},opt);
+  window.addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault()},opt);
+  window.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&['+','-','=','0',';'].indexOf(e.key)>=0)e.preventDefault()});
+  document.addEventListener('contextmenu',function(e){e.preventDefault()});
+})();
+(function(){
+  var errs=[];
+  window.addEventListener('error',function(e){errs.push((e.message||'error')+' @'+(e.filename||'')+':'+(e.lineno||''))});
+  window.addEventListener('unhandledrejection',function(e){errs.push('reject: '+(e.reason&&e.reason.message||e.reason))});
+  setTimeout(function(){
+    if(window.__jsUp) return;
+    var l=document.getElementById('loading');if(l)l.style.display='none';
+    var d=document.createElement('div');d.style.cssText='position:fixed;inset:auto 8px 8px 8px;z-index:199;background:#fff;color:#b00;font:12px/1.4 monospace;white-space:pre-wrap;padding:10px';
+    d.textContent='起動できませんでした / failed to start\n'+(errs.join('\n')||'(no error captured)')+'\n'+navigator.userAgent;
+    document.body.appendChild(d);
+  },15000);
+})();
+</script>
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.js" } }</script>
+<script src="tm.js?v=1" data-game="snowman-body"></script>
+<script src="sfx.js?v=1"></script>
+<script type="module" src="js/game.js?v=1"></script>
+<script src="support.js?v=3" data-ja="肉まん" data-en="a pork bun"></script>
+</body>
+</html>
