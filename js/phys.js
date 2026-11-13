@@ -1,5 +1,5 @@
 // 雪玉の物理（three を使わない。固定 60Hz。同じ入力なら同じ結果）
-import { OBJ, FIRES, STEAMS, BRIDGE, TUNNEL, POOL, STAGE, SCHOOL, S_END, WEATHER, SURF, height, surfaceAt, lanesAt, laneOf, laneX, cx, clamp, rng } from './course.js?v=1'
+import { OBJ, FIRES, STEAMS, BRIDGE, TUNNEL, POOL, STAGE, SCHOOL, S_END, WEATHER, SURF, height, surfaceAt, lanesAt, laneOf, laneX, cx, clamp, rng } from './course.js?v=2'
 
 export const DT = 1 / 60
 export const TUNE = {

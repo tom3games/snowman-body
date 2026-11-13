@@ -23,7 +23,7 @@ for (const key of KEYS) {
   await p.evaluate(({ z, lane, r }) => new Promise(async res => {
     const s = window.snowman
     s.start(5)
-    const C = await import('./js/course.js?v=1')
+    const C = await import('./js/course.js?v=2')
     let x = C.cx(z)
     if (lane === 'onsenpool') x = C.laneX(C.POOL.s, 'onsen') + C.POOL.du - 1.2
     else if (lane) x = C.laneX(z, lane)

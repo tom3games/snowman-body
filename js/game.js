@@ -5,15 +5,15 @@ import { RenderPass } from '../vendor/jsm/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from '../vendor/jsm/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from '../vendor/jsm/postprocessing/OutputPass.js'
 import { ShaderPass } from '../vendor/jsm/postprocessing/ShaderPass.js'
-import { TXT, ENDINGS } from './data.js?v=1'
-import { S_END, OBJ, FIRES, STEAMS, BRANCHES, BRIDGE, TUNNEL, POOL, STAGE, SCHOOL, YARD, cx, height, lanesAt, laneOf, laneX, surfaceAt, clamp, rng } from './course.js?v=1'
-import { newRun, step, DT, bodyRange } from './phys.js?v=1'
-import { buildWorld, buildSky, buildBackdrop, makeBall, makeParticles, makeTrail, makeDebris, loadTextures, makeSnowman, puffTex } from './view.js?v=1'
-import { loadChars, Person } from './chars.js?v=1'
-import { makeBot, botInput } from './bot.js?v=1'
+import { TXT, ENDINGS } from './data.js?v=2'
+import { S_END, OBJ, FIRES, STEAMS, BRANCHES, BRIDGE, TUNNEL, POOL, STAGE, SCHOOL, YARD, cx, height, lanesAt, laneOf, laneX, surfaceAt, clamp, rng } from './course.js?v=2'
+import { newRun, step, DT, bodyRange } from './phys.js?v=2'
+import { buildWorld, buildSky, buildBackdrop, makeBall, makeParticles, makeTrail, makeDebris, loadTextures, loadLaterTextures, makeSnowman, puffTex } from './view.js?v=2'
+import { loadChars, Person } from './chars.js?v=2'
+import { makeBot, botInput } from './bot.js?v=2'
 
 window.__jsUp = true
-const V = '?v=1'
+const V = '?v=2'
 const $ = id => document.getElementById(id)
 const Q = new URLSearchParams(location.search)
 const isTouch = matchMedia('(pointer: coarse)').matches
@@ -118,7 +118,7 @@ async function boot() {
   enter('title'); M('weather')
   renderer.compile(scene, camera); M('compile')
   window.__snowReady = true
-  setTimeout(() => loadChars(V), 50)  // 人は最初の画面のあとで読む（届くまでは仮の形）
+  setTimeout(() => { loadLaterTextures(V); loadChars(V) }, 50)  // 人は最初の画面のあとで読む（届くまでは仮の形）
   const l = $('loading'); l.style.opacity = '0'; setTimeout(() => l.remove(), 450)
 }
 setTimeout(() => { const l = $('loading'); if (l && G.state === 'load') { l.style.opacity = '0' } }, 12000)

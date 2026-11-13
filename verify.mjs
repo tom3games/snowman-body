@@ -101,7 +101,7 @@ await t('右の手袋を本物の指で押している間、雪玉が画面の�
 })
 await t('ブレーキ: 小さい玉は効き、大きい玉は効きにくい', async () => {
   const r = await p.evaluate(async () => {
-    const P = await import('./js/phys.js?v=1'), C = await import('./js/course.js?v=1')
+    const P = await import('./js/phys.js?v=2'), C = await import('./js/course.js?v=2')
     const f = (r, br) => { const run = P.newRun(1, { weather: 'cloudy' }); Object.assign(run.b, { x: C.cx(690), z: 690, vx: 0, vz: 12, r }); for (let i = 0; i < 60; i++) P.step(run, { steer: 0, brake: br }); return run.b.sp }
     return { small: +(f(0.3, 0) - f(0.3, 1)).toFixed(2), big: +(f(1.8, 0) - f(1.8, 1)).toFixed(2) }
   })
@@ -116,7 +116,7 @@ await t('キーボード ← → ↓ が入力になる', async () => {
 })
 await t('同じ種・同じ入力なら同じ結果（決定的）', async () => {
   const r = await p.evaluate(async () => {
-    const P = await import('./js/phys.js?v=1'), B = await import('./js/bot.js?v=1')
+    const P = await import('./js/phys.js?v=2'), B = await import('./js/bot.js?v=2')
     const go = () => { const run = P.newRun(42), bot = B.makeBot('lanes', { plan: [0, 2, 1, 0, 2, 1, 2] }); while (!run.done) P.step(run, B.botInput(bot, run)); return run.end.key + ':' + run.b.r.toFixed(6) + ':' + run.steps }
     return [go(), go()]
   })
@@ -124,7 +124,7 @@ await t('同じ種・同じ入力なら同じ結果（決定的）', async () =>
 })
 await t('何もしないと胴体にならない（天気3つ × 頭の大きさ3つ）', async () => {
   const r = await p.evaluate(async () => {
-    const P = await import('./js/phys.js?v=1'), out = {}
+    const P = await import('./js/phys.js?v=2'), out = {}
     for (const w of ['sunny', 'cloudy', 'snowing']) for (const h of [0.27, 0.32, 0.37]) { const run = P.newRun(1, { weather: w, headR: h }); while (!run.done) P.step(run, { steer: 0, brake: 0 }); out[run.end.key] = (out[run.end.key] || 0) + 1 }
     return out
   })

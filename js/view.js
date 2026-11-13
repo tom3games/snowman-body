@@ -1,20 +1,27 @@
 // 3D の見た目（地形・雪の質感・木・岩・小屋・村・雪玉・雪煙）
 import * as THREE from 'three'
 import { mergeGeometries, mergeVertices } from '../vendor/jsm/utils/BufferGeometryUtils.js'
-import { OBJ, FIRES, STEAMS, BRANCHES, BRIDGE, TUNNEL, POOL, STAGE, YARD, S_END, L, HW0, height, surfaceAt, lanesAt, laneX, cx, rng, clamp } from './course.js?v=1'
-import { Person } from './chars.js?v=1'
+import { OBJ, FIRES, STEAMS, BRANCHES, BRIDGE, TUNNEL, POOL, STAGE, YARD, S_END, L, HW0, height, surfaceAt, lanesAt, laneX, cx, rng, clamp } from './course.js?v=2'
+import { Person } from './chars.js?v=2'
 
-const TEX = {}
+const TEX = {}, CLONES = {}
+// 最初の画面に要るのは雪だけ。ほかは平均の色の仮の絵を置いて、最初の画面のあとで差し替える
+const FIRST = ['snow_02_diff', 'snow_02_nor_gl']
+const LATER = { snow_02_rough: '#b4b4b4', rock_boulder_dry_diff: '#78736a', rock_boulder_dry_nor_gl: '#8080ff', aerial_rocks_02_diff: '#6e695f', japanese_cedar_bark_diff: '#5a4637', japanese_cedar_bark_nor_gl: '#8080ff', weathered_planks_diff: '#4e4239', weathered_planks_nor_gl: '#8080ff', cobblestone_floor_08_diff: '#908a7e', cobblestone_floor_08_nor_gl: '#8080ff', plastered_wall_04_diff: '#8c8986', dirt_diff: '#61513d', corrugated_iron_diff: '#a8b2ad', corrugated_iron_nor_gl: '#8080ff' }
+function prep(t, n) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; if (/diff/.test(n)) t.colorSpace = THREE.SRGBColorSpace; return t }
 export function loadTextures(V, onEach) {
   const tl = new THREE.TextureLoader()
-  const list = ['snow_02_diff', 'snow_02_nor_gl', 'snow_02_rough', 'rock_boulder_dry_diff', 'rock_boulder_dry_nor_gl', 'aerial_rocks_02_diff', 'japanese_cedar_bark_diff', 'japanese_cedar_bark_nor_gl', 'weathered_planks_diff', 'weathered_planks_nor_gl', 'cobblestone_floor_08_diff', 'cobblestone_floor_08_nor_gl', 'plastered_wall_04_diff', 'dirt_diff', 'corrugated_iron_diff', 'corrugated_iron_nor_gl']
-  return Promise.all(list.map(n => tl.loadAsync('assets/tex/' + n + '.webp' + V).then(t => {
-    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4
-    if (/diff/.test(n)) t.colorSpace = THREE.SRGBColorSpace
-    TEX[n] = t; onEach && onEach()
-  }).catch(e => { console.warn('tex', n, e); onEach && onEach() })))
+  for (const [n, col] of Object.entries(LATER)) { const c = document.createElement('canvas'); c.width = c.height = 4; const x = c.getContext('2d'); x.fillStyle = col; x.fillRect(0, 0, 4, 4); TEX[n] = prep(new THREE.Texture(c), n); TEX[n].needsUpdate = true; onEach && onEach() }
+  return Promise.all(FIRST.map(n => tl.loadAsync('assets/tex/' + n + '.webp' + V).then(t => { TEX[n] = prep(t, n); onEach && onEach() }).catch(e => { console.warn('tex', n, e); onEach && onEach() })))
 }
-const tx = (n, rx = 1, ry = rx) => { const t = TEX[n]; if (!t) return null; const c = t.clone(); c.repeat.set(rx, ry); c.needsUpdate = true; return c }
+export function loadLaterTextures(V) {
+  for (const n of Object.keys(LATER)) {
+    const img = new Image(); img.decoding = 'async'
+    img.onload = () => { for (const t of [TEX[n], ...(CLONES[n] || [])]) { t.dispose(); t.image = img; t.needsUpdate = true } } /* 大きさが変わるので一度捨てて作り直す */
+    img.src = 'assets/tex/' + n + '.webp' + V
+  }
+}
+const tx = (n, rx = 1, ry = rx) => { const t = TEX[n]; if (!t) return null; const c = t.clone(); c.repeat.set(rx, ry); c.needsUpdate = true; (CLONES[n] || (CLONES[n] = [])).push(c); return c }
 
 // ------------------------------------------------------------ 地形
 const U0 = -48, U1 = 48, DU = 1.2, DS = 1.0

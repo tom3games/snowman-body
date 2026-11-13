@@ -1,6 +1,6 @@
 // 自動で遊ぶ bot（sim・検証・タイトルの背景）。three を使わない
-import { BRANCHES, lanesAt, cx, clamp, rng } from './course.js?v=1'
-import { newRun, cloneRun, step, bodyRange, DT } from './phys.js?v=1'
+import { BRANCHES, lanesAt, cx, clamp, rng } from './course.js?v=2'
+import { newRun, cloneRun, step, bodyRange, DT } from './phys.js?v=2'
 
 // 決めどころ。opts の1つを選ぶ。lane: 分かれ道の道の番号、du: 道の中での横の位置 [[s,u]...]、u: 合流区間の横の位置、brake: [[s0,s1]...]
 export const DEC = [

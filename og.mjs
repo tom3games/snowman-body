@@ -12,7 +12,7 @@ await p.goto(`http://localhost:${PORT}/?seed=11&w=sunny&h=0.32`)
 await p.waitForFunction(() => window.__snowReady, null, { timeout: 30000 })
 await p.waitForTimeout(1200)
 await p.evaluate(async () => {
-  const s = window.snowman, C = await import('./js/course.js?v=1')
+  const s = window.snowman, C = await import('./js/course.js?v=2')
   s.start(11); s.pause(true)
   s.setRun({ x: C.cx(478) + 0.4, z: 463, vx: 0, vz: 15, r: 1.55 })
   for (let i = 0; i < 400 && !s.G.run.st.smash.barn; i++) s.stepN(1, { steer: 0, brake: 0 })

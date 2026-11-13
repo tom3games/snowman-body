@@ -25,7 +25,7 @@ for (const [name, bt, opts] of [['chromium', chromium, {}], ['webkit', webkit, {
   const fin = await p.evaluate(() => window.__lastEnd.key + ' mute=' + (window.__muteOk ? window.__muteOk() : '?'))
   errs.push(...[]); out.push(`${name}: end=${fin}`)
   await p.screenshot({ path: `shots/live-${name}.png` })
-  const og = await p.evaluate(async () => { const r = await fetch('og.png?v=1'); return r.status + ' ' + r.headers.get('content-type') })
+  const og = await p.evaluate(async () => { const r = await fetch('og.png?v=2'); return r.status + ' ' + r.headers.get('content-type') })
   out.push(`${name}: og=${og} errors=${errs.length ? errs.join(' | ') : 'none'}`)
   await b.close()
 }

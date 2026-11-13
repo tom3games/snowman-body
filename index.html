@@ -87,7 +87,8 @@ button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer
 #post .cur.ok{box-shadow:0 0 0 3px #d63428,0 2px 6px rgba(20,30,50,.45)}
 #sizeT{position:absolute;right:8px;top:calc(64px + min(46svh,380px) + 14px + env(safe-area-inset-top));font-size:13px;font-weight:900;color:#1d2a40;background:rgba(255,255,255,.8);border-radius:8px;padding:1px 7px;font-variant-numeric:tabular-nums;white-space:nowrap}
 #bub{position:absolute;z-index:8;max-width:min(62%,300px);background:#fff;color:var(--ink);border-radius:14px;padding:4px 12px 5px;font-size:15px;font-weight:700;line-height:1.35;width:max-content;opacity:0;transition:opacity .15s;transform:translate(-50%,-100%);box-shadow:0 2px 8px rgba(20,30,50,.25)}
-#bub.on{opacity:1}
+#bub{visibility:hidden}
+#bub.on{opacity:1;visibility:visible}
 #bub.radio{background:#24344c;color:#fff;border-radius:6px}
 #pop{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);font-size:28px;font-weight:900;color:#fff;-webkit-text-stroke:6px #24344c;paint-order:stroke fill;white-space:nowrap;opacity:0}
 #pop.on{animation:pop 1.2s ease-out forwards}
@@ -201,8 +202,8 @@ button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer
 </script>
 <script type="importmap">{ "imports": { "three": "./vendor/three.module.js" } }</script>
 <script src="tm.js?v=1" data-game="snowman-body"></script>
-<script src="sfx.js?v=1"></script>
-<script type="module" src="js/game.js?v=1"></script>
+<script src="sfx.js?v=2"></script>
+<script type="module" src="js/game.js?v=2"></script>
 <script src="support.js?v=3" data-ja="肉まん" data-en="a pork bun"></script>
 </body>
 </html>
